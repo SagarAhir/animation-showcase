@@ -40,6 +40,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c8639542-3c53-438d-a8ac-e6f7598792f6"
+      }
+    },
+    "owner": "sagarahir"
   }
 }
