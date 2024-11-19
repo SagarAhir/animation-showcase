@@ -13,14 +13,18 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sagarahir.animationshowcase"
+      "package": "com.sagarahir.animationshowcase",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -49,6 +53,9 @@
         "projectId": "c8639542-3c53-438d-a8ac-e6f7598792f6"
       }
     },
-    "owner": "sagarahir"
+    "owner": "sagarahir",
+    "updates": {
+      "url": "https://u.expo.dev/c8639542-3c53-438d-a8ac-e6f7598792f6"
+    }
   }
 }
