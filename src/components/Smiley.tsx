@@ -4,8 +4,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  runOnJS,
   useDerivedValue,
+  interpolate,
 } from "react-native-reanimated";
 import { Canvas, Circle, Oval, Path } from "@shopify/react-native-skia";
 import {
@@ -19,12 +19,12 @@ const WINDOW_WIDTH = Dimensions.get("window").width;
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 
 const FACE_SIZE = 125;
-const EYE_CANVAS_HEIGHT = 100;
 const BALL_X = 150;
 const BALL_Y = 450;
 const EYE_WIDTH = 75;
 const EYE_HEIGHT = 100;
 const PUPIL_RADIUS = 10;
+const BALL_RADIUS = 15;
 
 const Smiley = () => {
   const colorScheme = useColorScheme();
@@ -33,8 +33,8 @@ const Smiley = () => {
   const eyeX = useSharedValue(0);
   const eyeY = useSharedValue(0);
 
-  const ballX = useSharedValue(BALL_X);
-  const ballY = useSharedValue(BALL_Y);
+  const ballX = useSharedValue(WINDOW_WIDTH / 2 - BALL_RADIUS);
+  const ballY = useSharedValue(WINDOW_HEIGHT / 2 - BALL_RADIUS - 20);
 
   const maxPupilOffsetX = (EYE_WIDTH / 2 - PUPIL_RADIUS) / 2;
   const maxPupilOffsetY = (EYE_HEIGHT / 2 - PUPIL_RADIUS) / 2;
@@ -43,6 +43,7 @@ const Smiley = () => {
   const prevBallY = useSharedValue(BALL_Y);
 
   const smileCurve = useSharedValue(0);
+  const smileXCurve = useSharedValue(0);
 
   const dragGesture = Gesture.Pan()
     .onBegin(() => {
@@ -65,19 +66,30 @@ const Smiley = () => {
       const deltaY = ballY.value - centerY;
 
       eyeX.value = withSpring(
-        Math.max(-maxPupilOffsetX, Math.min(maxPupilOffsetX, deltaX / 25)),
+        Math.max(-maxPupilOffsetX, Math.min(maxPupilOffsetX, deltaX / 20)),
         { damping: 15 }
       );
       eyeY.value = withSpring(
-        Math.max(-maxPupilOffsetY, Math.min(maxPupilOffsetY, deltaY / 25)),
+        Math.max(-maxPupilOffsetY, Math.min(maxPupilOffsetY, deltaY / 20)),
         { damping: 15 }
       );
 
-      // Update smile animation calculation to use absolute position
       const screenMidpoint = WINDOW_HEIGHT / 2;
-      smileCurve.value = withSpring(ballY.value < screenMidpoint ? -1 : 1, {
-        damping: 15,
-      });
+      smileCurve.value = withSpring(
+        interpolate(
+          ballY.value,
+          [screenMidpoint - 200, screenMidpoint + 200],
+          [-1, 1]
+        ),
+        {
+          damping: 15,
+        }
+      );
+
+      smileXCurve.value = withSpring(
+        interpolate(ballX.value, [0, WINDOW_WIDTH], [-1, 1]),
+        { damping: 15 }
+      );
     });
 
   const animatedBallStyle = useAnimatedStyle(() => ({
@@ -88,12 +100,13 @@ const Smiley = () => {
     const faceX = WINDOW_WIDTH / 2; // face center X
     const faceY = WINDOW_HEIGHT / 2; // face center Y
 
-    const startX = faceX - FACE_SIZE * 0.4;
-    const endX = faceX + FACE_SIZE * 0.4;
+    const smileX = faceX + FACE_SIZE * 0.5 * smileXCurve.value;
+    const startX = faceX - FACE_SIZE * 0.5;
+    const endX = faceX + FACE_SIZE * 0.5;
     const y = faceY + FACE_SIZE * 0.5;
     const controlY = y + 30 * smileCurve.value;
 
-    return `M ${startX} ${y} Q ${faceX} ${controlY} ${endX} ${y}`;
+    return `M ${startX} ${y} Q ${smileX} ${controlY} ${endX} ${y}`;
   });
 
   const leftEyeX = useDerivedValue(() => {
@@ -133,7 +146,7 @@ const Smiley = () => {
             strokeWidth={8}
             style="stroke"
             strokeCap="round"
-            color={isDark ? Colors.dark.secondary : Colors.light.secondary}
+            color={isDark ? Colors.dark.black : Colors.light.black}
           />
           {/* Left Eye */}
           <Oval
@@ -141,13 +154,13 @@ const Smiley = () => {
             y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
             width={EYE_WIDTH / 2}
             height={EYE_HEIGHT / 2}
-            color={isDark ? Colors.dark.secondary : Colors.light.secondary}
+            color={isDark ? Colors.dark.white : Colors.light.white}
           />
           <Circle
             cx={leftEyeX}
             cy={eyeYPosition}
             r={PUPIL_RADIUS}
-            color={isDark ? Colors.dark.text : Colors.light.text}
+            color={isDark ? Colors.dark.black : Colors.light.black}
           />
 
           {/* Right Eye */}
@@ -156,27 +169,26 @@ const Smiley = () => {
             y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
             width={EYE_WIDTH / 2}
             height={EYE_HEIGHT / 2}
-            color={isDark ? Colors.dark.secondary : Colors.light.secondary}
+            color={isDark ? Colors.dark.white : Colors.light.white}
           />
           <Circle
             cx={rightEyeX}
             cy={eyeYPosition}
             r={PUPIL_RADIUS}
-            color={isDark ? Colors.dark.text : Colors.light.text}
+            color={isDark ? Colors.dark.black : Colors.light.black}
           />
         </Canvas>
       </View>
       <GestureDetector gesture={dragGesture}>
-        <Animated.View style={[styles.draggableBall, animatedBallStyle]}>
-          <Canvas style={{ width: 30, height: 30 }}>
-            <Circle
-              cx={15}
-              cy={15}
-              r={15}
-              color={isDark ? Colors.dark.primary : Colors.light.primary}
-            />
-          </Canvas>
-        </Animated.View>
+        <Animated.View
+          style={[
+            styles.draggableBall,
+            animatedBallStyle,
+            isDark
+              ? { backgroundColor: Colors.dark.accent3 }
+              : { backgroundColor: Colors.light.accent3 },
+          ]}
+        ></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );
@@ -195,8 +207,9 @@ const styles = StyleSheet.create({
   },
   draggableBall: {
     position: "absolute",
-    width: 30,
-    height: 30,
+    width: BALL_RADIUS * 2,
+    height: BALL_RADIUS * 2,
+    borderRadius: BALL_RADIUS,
     zIndex: 1000,
   },
 });
