@@ -6,6 +6,7 @@ import Animated, {
   withSpring,
   useDerivedValue,
   interpolate,
+  interpolateColor,
 } from "react-native-reanimated";
 import { Canvas, Circle, Oval, Path } from "@shopify/react-native-skia";
 import {
@@ -34,7 +35,7 @@ const Smiley = () => {
   const eyeY = useSharedValue(0);
 
   const ballX = useSharedValue(WINDOW_WIDTH / 2 - BALL_RADIUS);
-  const ballY = useSharedValue(WINDOW_HEIGHT / 2 - BALL_RADIUS - 20);
+  const ballY = useSharedValue(WINDOW_HEIGHT / 2 - BALL_RADIUS);
 
   const maxPupilOffsetX = (EYE_WIDTH / 2 - PUPIL_RADIUS) / 2;
   const maxPupilOffsetY = (EYE_HEIGHT / 2 - PUPIL_RADIUS) / 2;
@@ -92,8 +93,25 @@ const Smiley = () => {
       );
     });
 
+  const isInsideFace = useDerivedValue(() => {
+    const faceX = WINDOW_WIDTH / 2 - BALL_RADIUS;
+    const faceY = WINDOW_HEIGHT / 2 - BALL_RADIUS - 40;
+
+    const dx = ballX.value - faceX;
+    const dy = ballY.value - faceY;
+    return dx * dx + dy * dy <= FACE_SIZE * FACE_SIZE;
+  });
+
   const animatedBallStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: ballX.value }, { translateY: ballY.value }],
+    backgroundColor: interpolateColor(
+      isInsideFace.value ? 1 : 0,
+      [0, 1],
+      [
+        isDark ? Colors.dark.accent2 : Colors.light.accent2,
+        isDark ? Colors.dark.accent3 : Colors.light.accent3,
+      ]
+    ),
   }));
 
   const smilePath = useDerivedValue(() => {
@@ -123,18 +141,21 @@ const Smiley = () => {
 
   return (
     <GestureHandlerRootView>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: isDark
-              ? Colors.dark.background
-              : Colors.light.background,
-          },
-        ]}
-      >
+      <View style={[styles.container]}>
         {/* Face Circle */}
-        <Canvas style={{ width: WINDOW_WIDTH, height: WINDOW_HEIGHT }}>
+        <Canvas
+          style={[
+            {
+              width: WINDOW_WIDTH,
+              height: WINDOW_HEIGHT,
+            },
+            {
+              backgroundColor: isDark
+                ? Colors.dark.background
+                : Colors.light.background,
+            },
+          ]}
+        >
           <Circle
             cx={WINDOW_WIDTH / 2}
             cy={WINDOW_HEIGHT / 2}
@@ -181,13 +202,7 @@ const Smiley = () => {
       </View>
       <GestureDetector gesture={dragGesture}>
         <Animated.View
-          style={[
-            styles.draggableBall,
-            animatedBallStyle,
-            isDark
-              ? { backgroundColor: Colors.dark.accent3 }
-              : { backgroundColor: Colors.light.accent3 },
-          ]}
+          style={[styles.draggableBall, animatedBallStyle]}
         ></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
