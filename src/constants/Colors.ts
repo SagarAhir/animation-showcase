@@ -21,6 +21,7 @@ export default {
     gray100: '#F3F4F6',
     gray200: '#E5E7EB',
     gray300: '#D1D5DB',
+    moonGray: '#64748B',
   },
   dark: {
     text: '#FEF3C7',
@@ -41,5 +42,6 @@ export default {
     gray100: '#374151',
     gray200: '#1F2937',
     gray300: '#111827',
+    moonGray: '#F3F4F6',
   },
 };
