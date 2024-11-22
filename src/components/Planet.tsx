@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { Canvas, Circle, Shadow } from "@shopify/react-native-skia";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, Text } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -20,8 +20,11 @@ import Animated, {
 
 const { height, width } = Dimensions.get("window");
 
-const ORBIT_RADIUS = 150;
-const PLANET_RADIUS = 30;
+const ORBIT_RADIUS = 125;
+const STAR_RADIUS = 30;
+const PLANET_RADIUS = STAR_RADIUS / 4;
+const MOON_ORBIT = PLANET_RADIUS * 4;
+const MOON_RADIUS = PLANET_RADIUS / 2;
 
 const Planet = () => {
   const { colors } = useTheme();
@@ -98,11 +101,11 @@ const Planet = () => {
   });
 
   const moonPositionX = useDerivedValue(() => {
-    return positionX.value + PLANET_RADIUS * 1.5 * Math.cos(moonAngle.value);
+    return positionX.value + MOON_ORBIT * Math.cos(moonAngle.value);
   });
 
   const moonPositionY = useDerivedValue(() => {
-    return positionY.value + PLANET_RADIUS * 1.5 * Math.sin(moonAngle.value);
+    return positionY.value + MOON_ORBIT * Math.sin(moonAngle.value);
   });
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -118,7 +121,7 @@ const Planet = () => {
         <Circle
           cx={width / 2}
           cy={height / 2}
-          r={PLANET_RADIUS}
+          r={STAR_RADIUS}
           color={colors.warning}
         >
           <Shadow
@@ -147,14 +150,14 @@ const Planet = () => {
           <Circle
             cx={positionX}
             cy={positionY}
-            r={PLANET_RADIUS / 2}
+            r={PLANET_RADIUS}
             color={colors.accent1}
           />
           {/* Earth's Orbit */}
           <Circle
             cx={positionX}
             cy={positionY}
-            r={PLANET_RADIUS * 1.5}
+            r={MOON_ORBIT}
             style="stroke"
             strokeWidth={1}
             color={colors.warning}
@@ -164,7 +167,7 @@ const Planet = () => {
           <Circle
             cx={moonPositionX}
             cy={moonPositionY}
-            r={PLANET_RADIUS / 6}
+            r={MOON_RADIUS}
             color={colors.moonGray}
           />
         </Canvas>
@@ -182,8 +185,8 @@ const themedStyleSheet = (colors: typeof Colors.dark) =>
   StyleSheet.create({
     infoContainer: {
       position: "absolute",
-      top: 20,
-      left: 20,
+      top: "5%",
+      left: "10%",
       alignSelf: "center",
       justifyContent: "center",
       borderRadius: 5,
