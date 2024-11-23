@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { Canvas, Circle, Shadow } from "@shopify/react-native-skia";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -17,6 +17,7 @@ import Animated, {
   useDerivedValue,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import Stars from "./Stars";
 
 const { height, width } = Dimensions.get("window");
 
@@ -38,15 +39,14 @@ const Planet = () => {
   useEffect(() => {
     angle.value = withRepeat(
       withTiming(Math.PI * 2, {
-        duration: 10000,
+        duration: 15000,
         easing: Easing.linear,
       }),
       -1
     );
-
     moonAngle.value = withRepeat(
       withTiming(Math.PI * 2, {
-        duration: 5000,
+        duration: 7000,
         easing: Easing.linear,
       }),
       -1
@@ -138,10 +138,13 @@ const Planet = () => {
           cx={width / 2}
           cy={height / 2}
           r={ORBIT_RADIUS}
-          color={colors.tint}
+          color={colors.border}
           style="stroke"
           strokeWidth={1}
         />
+
+        {/* Stars */}
+        <Stars />
       </Canvas>
       {/* Planet */}
       <GestureDetector gesture={gesture}>
@@ -160,7 +163,7 @@ const Planet = () => {
             r={MOON_ORBIT}
             style="stroke"
             strokeWidth={1}
-            color={colors.warning}
+            color={colors.border}
           />
 
           {/*  */}
@@ -196,5 +199,10 @@ const themedStyleSheet = (colors: typeof Colors.dark) =>
     },
     text: {
       color: colors.tint,
+    },
+    stars: {
+      position: "absolute",
+      top: 0,
+      left: 0,
     },
   });

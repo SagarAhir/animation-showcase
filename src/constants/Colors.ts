@@ -10,6 +10,7 @@ export default {
     tabIconSelected: tintColorLight,
     primary: '#B45309',
     secondary: '#78350F',
+    border: '#94A3B8',
     white: '#FFFFFF',
     black: '#000000',
     accent1: '#3B82F6',
@@ -22,6 +23,7 @@ export default {
     gray200: '#E5E7EB',
     gray300: '#D1D5DB',
     moonGray: '#64748B',
+    overlay: "rgba(0, 0, 0, 0.1)"
   },
   dark: {
     text: '#FEF3C7',
@@ -31,6 +33,7 @@ export default {
     tabIconSelected: tintColorDark,
     primary: '#F59E0B',
     secondary: '#92400E',
+    border: '#475569',
     white: '#FFFFFF',
     black: '#000000',
     accent1: '#60A5FA',
@@ -43,5 +46,7 @@ export default {
     gray200: '#1F2937',
     gray300: '#111827',
     moonGray: '#F3F4F6',
+    overlay: "rgba(255, 255, 255, 0.1)"
+
   },
 };

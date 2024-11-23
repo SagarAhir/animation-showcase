@@ -8,6 +8,7 @@ import { Dimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Colors from "@/constants/Colors";
 import Planet from "@/components/Planet";
+import GravityCenter from "@/components/GravityCenter";
 const { width } = Dimensions.get("window");
 
 const CURSOR_SIZE = 40;
@@ -33,6 +34,8 @@ const Preview = () => {
         return <Smiley />;
       case ANIMATION_ID.PLANET:
         return <Planet />;
+      case ANIMATION_ID.GRAVITY:
+        return <GravityCenter />;
       default:
         return <Text>Animation not found</Text>;
     }

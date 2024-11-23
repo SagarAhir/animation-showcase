@@ -1,12 +1,12 @@
-import { Pressable, Text, StyleSheet } from 'react-native';
-import Animated, { 
-  useAnimatedStyle, 
+import { Pressable, Text, StyleSheet } from "react-native";
+import Animated, {
+  useAnimatedStyle,
   withSpring,
   useSharedValue,
   withSequence,
-} from 'react-native-reanimated';
-import { useColorScheme } from './useColorScheme';
-import Colors from '@/constants/Colors';
+} from "react-native-reanimated";
+import { useColorScheme } from "./useColorScheme";
+import Colors from "@/constants/Colors";
 
 interface AnimationButtonProps {
   title: string;
@@ -15,13 +15,16 @@ interface AnimationButtonProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export default function AnimationButton({ title, onPress }: AnimationButtonProps) {
+export default function AnimationButton({
+  title,
+  onPress,
+}: AnimationButtonProps) {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }]
+    transform: [{ scale: scale.value }],
   }));
 
   const handlePress = () => {
@@ -41,8 +44,9 @@ export default function AnimationButton({ title, onPress }: AnimationButtonProps
           backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
         },
         animatedStyle,
-      ]}>
-      <Text style={[styles.text, { color: isDark ? '#000' : '#fff' }]}>
+      ]}
+    >
+      <Text style={[styles.text, { color: isDark ? "#000" : "#fff" }]}>
         {title}
       </Text>
     </AnimatedPressable>
@@ -53,8 +57,8 @@ const styles = StyleSheet.create({
   button: {
     padding: 15,
     borderRadius: 10,
-    minWidth: 150,
-    alignItems: 'center',
+    minWidth: "90%",
+    alignItems: "center",
     marginVertical: 8,
     shadowColor: "#000",
     shadowOffset: {
@@ -67,6 +71,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-}); 
+});

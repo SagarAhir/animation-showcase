@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, useColorScheme, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Text } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,6 +15,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Colors from "@/constants/Colors";
+import { useTheme } from "@/context/ThemeContext";
 
 const WINDOW_WIDTH = Dimensions.get("window").width;
 const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -28,14 +29,14 @@ const PUPIL_RADIUS = 10;
 const BALL_RADIUS = 15;
 
 const Smiley = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const { colors } = useTheme();
+  const styles = themedStyleSheet(colors);
 
   const eyeX = useSharedValue(0);
   const eyeY = useSharedValue(0);
 
   const ballX = useSharedValue(WINDOW_WIDTH / 2 - BALL_RADIUS);
-  const ballY = useSharedValue(WINDOW_HEIGHT / 2 - BALL_RADIUS);
+  const ballY = useSharedValue(WINDOW_HEIGHT / 2);
 
   const maxPupilOffsetX = (EYE_WIDTH / 2 - PUPIL_RADIUS) / 2;
   const maxPupilOffsetY = (EYE_HEIGHT / 2 - PUPIL_RADIUS) / 2;
@@ -107,10 +108,7 @@ const Smiley = () => {
     backgroundColor: interpolateColor(
       isInsideFace.value ? 1 : 0,
       [0, 1],
-      [
-        isDark ? Colors.dark.accent2 : Colors.light.accent2,
-        isDark ? Colors.dark.accent3 : Colors.light.accent3,
-      ]
+      [colors.accent2, colors.accent3]
     ),
   }));
 
@@ -141,92 +139,79 @@ const Smiley = () => {
 
   return (
     <GestureHandlerRootView>
-      <View style={[styles.container]}>
-        {/* Face Circle */}
-        <Canvas
-          style={[
-            {
-              width: WINDOW_WIDTH,
-              height: WINDOW_HEIGHT,
-            },
-            {
-              backgroundColor: isDark
-                ? Colors.dark.background
-                : Colors.light.background,
-            },
-          ]}
-        >
-          <Circle
-            cx={WINDOW_WIDTH / 2}
-            cy={WINDOW_HEIGHT / 2}
-            r={FACE_SIZE}
-            color={isDark ? Colors.dark.tint : Colors.light.tint}
-          />
-          <Path
-            path={smilePath}
-            strokeWidth={8}
-            style="stroke"
-            strokeCap="round"
-            color={isDark ? Colors.dark.black : Colors.light.black}
-          />
-          {/* Left Eye */}
-          <Oval
-            x={WINDOW_WIDTH * 0.5 - EYE_WIDTH}
-            y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
-            width={EYE_WIDTH / 2}
-            height={EYE_HEIGHT / 2}
-            color={isDark ? Colors.dark.white : Colors.light.white}
-          />
-          <Circle
-            cx={leftEyeX}
-            cy={eyeYPosition}
-            r={PUPIL_RADIUS}
-            color={isDark ? Colors.dark.black : Colors.light.black}
-          />
+      {/* Face Circle */}
+      <Canvas
+        style={[
+          {
+            width: WINDOW_WIDTH,
+            height: WINDOW_HEIGHT,
+            backgroundColor: colors.background,
+          },
+        ]}
+      >
+        <Circle
+          cx={WINDOW_WIDTH / 2}
+          cy={WINDOW_HEIGHT / 2}
+          r={FACE_SIZE}
+          color={colors.tint}
+        />
+        <Path
+          path={smilePath}
+          strokeWidth={8}
+          style="stroke"
+          strokeCap="round"
+          color={colors.black}
+        />
+        {/* Left Eye */}
+        <Oval
+          x={WINDOW_WIDTH * 0.5 - EYE_WIDTH}
+          y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
+          width={EYE_WIDTH / 2}
+          height={EYE_HEIGHT / 2}
+          color={colors.white}
+        />
+        <Circle
+          cx={leftEyeX}
+          cy={eyeYPosition}
+          r={PUPIL_RADIUS}
+          color={colors.black}
+        />
 
-          {/* Right Eye */}
-          <Oval
-            x={WINDOW_WIDTH * 0.75 - EYE_WIDTH}
-            y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
-            width={EYE_WIDTH / 2}
-            height={EYE_HEIGHT / 2}
-            color={isDark ? Colors.dark.white : Colors.light.white}
-          />
-          <Circle
-            cx={rightEyeX}
-            cy={eyeYPosition}
-            r={PUPIL_RADIUS}
-            color={isDark ? Colors.dark.black : Colors.light.black}
-          />
-        </Canvas>
-      </View>
+        {/* Right Eye */}
+        <Oval
+          x={WINDOW_WIDTH * 0.75 - EYE_WIDTH}
+          y={WINDOW_HEIGHT / 2 - EYE_HEIGHT / 2}
+          width={EYE_WIDTH / 2}
+          height={EYE_HEIGHT / 2}
+          color={colors.white}
+        />
+        <Circle
+          cx={rightEyeX}
+          cy={eyeYPosition}
+          r={PUPIL_RADIUS}
+          color={colors.black}
+        />
+      </Canvas>
       <GestureDetector gesture={dragGesture}>
-        <Animated.View
-          style={[styles.draggableBall, animatedBallStyle]}
-        ></Animated.View>
+        <Animated.View style={[styles.draggableBall, animatedBallStyle]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  pupil: {
-    position: "absolute",
-    width: 20,
-    height: 20,
-  },
-  draggableBall: {
-    position: "absolute",
-    width: BALL_RADIUS * 2,
-    height: BALL_RADIUS * 2,
-    borderRadius: BALL_RADIUS,
-    zIndex: 1000,
-  },
-});
+const themedStyleSheet = (colors: typeof Colors.dark) => {
+  return StyleSheet.create({
+    draggableBall: {
+      position: "absolute",
+      width: BALL_RADIUS * 2,
+      height: BALL_RADIUS * 2,
+      borderRadius: BALL_RADIUS,
+      zIndex: 1,
+    },
+    text: {
+      color: colors.tint,
+    },
+  });
+};
 
 export default Smiley;
