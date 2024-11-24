@@ -10,7 +10,7 @@ import {
 import { useEffect } from "react";
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from "@/constants/Constants";
 
-const STAR_COUNT = 30;
+const STAR_COUNT = 50;
 const CENTER_X = WINDOW_WIDTH;
 const CENTER_Y = WINDOW_HEIGHT;
 const STARS = Array.from({ length: STAR_COUNT }, (_, id) => ({
@@ -23,41 +23,38 @@ const STARS = Array.from({ length: STAR_COUNT }, (_, id) => ({
 const Stars = () => {
   const { colors } = useTheme();
 
-  // Shared value for the angle controlling all stars
   const angle = useSharedValue(0);
 
   useEffect(() => {
-    // Animate the angle value to create the anticlockwise motion
     angle.value = withRepeat(
-      withTiming(Math.PI * 2, { duration: 600000, easing: Easing.linear }), // Increased from 45000 to 60000 ms
-      -1, // Infinite repetition
-      false // No reversing (ensures anticlockwise movement)
+      withTiming(Math.PI * 2, { duration: 600000, easing: Easing.linear }),
+      -1,
+      false
     );
   }, []);
 
   return (
     <>
       {STARS.map((star) => {
-        // Calculate X and Y positions based on the angle
         const cx = useDerivedValue(() => {
           return (
             CENTER_X - star.radius * Math.sin(angle.value + star.initialAngle)
-          ); // Use sine for X
+          );
         });
 
         const cy = useDerivedValue(() => {
           return (
             CENTER_Y - star.radius * Math.cos(angle.value + star.initialAngle)
-          ); // Use cosine for Y
+          );
         });
 
         return (
           <Circle
             key={star.id}
-            cx={cx} // Dynamically updated X position
-            cy={cy} // Dynamically updated Y position
-            r={star.size} // Visual size of the star
-            color={colors.white}
+            cx={cx}
+            cy={cy}
+            r={star.size}
+            color={colors.star}
           />
         );
       })}

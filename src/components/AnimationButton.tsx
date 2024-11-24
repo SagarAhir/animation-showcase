@@ -1,4 +1,4 @@
-import { Pressable, Text, StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -7,6 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useColorScheme } from "./useColorScheme";
 import Colors from "@/constants/Colors";
+import { CustomText } from "./StyledText";
 
 interface AnimationButtonProps {
   title: string;
@@ -46,9 +47,9 @@ export default function AnimationButton({
         animatedStyle,
       ]}
     >
-      <Text style={[styles.text, { color: isDark ? "#000" : "#fff" }]}>
+      <CustomText style={[styles.text, { color: isDark ? "#000" : "#fff" }]}>
         {title}
-      </Text>
+      </CustomText>
     </AnimatedPressable>
   );
 }

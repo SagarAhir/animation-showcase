@@ -1,4 +1,4 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ANIMATION_ID } from "@/constants/Constants";
@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Colors from "@/constants/Colors";
 import Planet from "@/components/Planet";
 import GravityCenter from "@/components/GravityCenter";
+import { CustomText } from "@/components/StyledText";
 const { width } = Dimensions.get("window");
 
 const CURSOR_SIZE = 40;
@@ -37,7 +38,7 @@ const Preview = () => {
       case ANIMATION_ID.GRAVITY:
         return <GravityCenter />;
       default:
-        return <Text>Animation not found</Text>;
+        return <CustomText>Animation not found</CustomText>;
     }
   };
 

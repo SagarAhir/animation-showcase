@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'animation-showcase'
+rootProject.name = 'Animation-Portfolio'
 
 dependencyResolutionManagement {
   versionCatalogs {

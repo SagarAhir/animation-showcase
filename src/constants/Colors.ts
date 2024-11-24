@@ -23,7 +23,8 @@ export default {
     gray200: '#E5E7EB',
     gray300: '#D1D5DB',
     moonGray: '#64748B',
-    overlay: "rgba(0, 0, 0, 0.1)"
+    overlay: "rgba(0, 0, 0, 0.1)",
+    star: '#1F2937'
   },
   dark: {
     text: '#FEF3C7',
@@ -46,7 +47,7 @@ export default {
     gray200: '#1F2937',
     gray300: '#111827',
     moonGray: '#F3F4F6',
-    overlay: "rgba(255, 255, 255, 0.1)"
-
+    overlay: "rgba(255, 255, 255, 0.1)",
+    star: '#F1F5F9'
   },
 };

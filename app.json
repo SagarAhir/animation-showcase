@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "animation-showcase",
+    "name": "Animation-Portfolio",
     "slug": "animation-showcase",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "scheme": "animation-showcase",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/images/splash.png",
+      "image": "./src/assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.sagarahir.animationshowcase",
@@ -29,7 +29,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./src/assets/images/favicon.png"
+      "favicon": "./src/assets/images/logo.png"
     },
     "plugins": [
       "expo-router",
@@ -37,7 +37,11 @@
         "expo-font",
         {
           "fonts": [
-            "./src/assets/fonts/SpaceMono-Regular.ttf"
+            "./src/assets/fonts/Quicksand-Regular.ttf",
+            "./src/assets/fonts/Quicksand-Medium.ttf",
+            "./src/assets/fonts/Quicksand-Light.ttf",
+            "./src/assets/fonts/Quicksand-SemiBold.ttf",
+            "./src/assets/fonts/Quicksand-Bold.ttf"
           ]
         }
       ]

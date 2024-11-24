@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import { Canvas, Circle, Shadow } from "@shopify/react-native-skia";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, Text } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -18,6 +18,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import Stars from "./Stars";
+import { CustomText } from "./StyledText";
 
 const { height, width } = Dimensions.get("window");
 
@@ -176,7 +177,9 @@ const Planet = () => {
         </Canvas>
       </GestureDetector>
       <Animated.View style={[styles.infoContainer, animatedStyle]}>
-        <Text style={styles.text}>{"You can move the blue planet !!"}</Text>
+        <CustomText style={styles.text}>
+          {"You can move the blue planet !!"}
+        </CustomText>
       </Animated.View>
     </GestureHandlerRootView>
   );
