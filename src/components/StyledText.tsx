@@ -7,6 +7,6 @@ export function MonoText(props: TextProps) {
 
 export function CustomText(props: TextProps) {
   return (
-    <Text {...props} style={[props.style, { fontFamily: Fonts.medium }]} />
+    <Text {...props} style={[props.style, { fontFamily: Fonts.regular }]} />
   );
 }

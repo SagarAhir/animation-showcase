@@ -10,10 +10,10 @@ type ThemeContextType = {
 };
 
 const ThemeContext = createContext<ThemeContextType>({
-  isDark: false,
-  backgroundColor: Colors.light.background,
-  tintColor: Colors.light.tint,
-  colors: Colors.light,
+  isDark: true,
+  backgroundColor: Colors.dark.background,
+  tintColor: Colors.dark.tint,
+  colors: Colors.dark,
 });
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {

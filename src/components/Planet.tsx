@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
-import { Canvas, Circle, Shadow } from "@shopify/react-native-skia";
+import { Canvas, Circle, Oval, Shadow } from "@shopify/react-native-skia";
 import { useEffect } from "react";
 import { Dimensions, StyleSheet } from "react-native";
 import {
@@ -16,17 +16,22 @@ import Animated, {
   cancelAnimation,
   useDerivedValue,
   useAnimatedStyle,
+  interpolateColor,
+  interpolate,
 } from "react-native-reanimated";
 import Stars from "./Stars";
 import { CustomText } from "./StyledText";
 
 const { height, width } = Dimensions.get("window");
 
-const ORBIT_RADIUS = 125;
+const ORBIT_RADIUS_X = 250;
+const ORBIT_RADIUS_Y = 300;
 const STAR_RADIUS = 30;
 const PLANET_RADIUS = STAR_RADIUS / 4;
 const MOON_ORBIT = PLANET_RADIUS * 4;
 const MOON_RADIUS = PLANET_RADIUS / 2;
+const EARTH_YEAR = 11000;
+const MOON_YEAR = 3000;
 
 const Planet = () => {
   const { colors } = useTheme();
@@ -40,14 +45,14 @@ const Planet = () => {
   useEffect(() => {
     angle.value = withRepeat(
       withTiming(Math.PI * 2, {
-        duration: 15000,
+        duration: EARTH_YEAR,
         easing: Easing.linear,
       }),
       -1
     );
     moonAngle.value = withRepeat(
       withTiming(Math.PI * 2, {
-        duration: 7000,
+        duration: MOON_YEAR,
         easing: Easing.linear,
       }),
       -1
@@ -63,8 +68,8 @@ const Planet = () => {
       opacity.value = withTiming(0, {
         duration: 2000,
       });
-      const dx = e.absoluteX - width / 2;
-      const dy = e.absoluteY - height / 2;
+      const dx = e.absoluteX - width / 2; // x - center x
+      const dy = e.absoluteY - height / 2; // y - center y
       angle.value = Math.atan2(dy, dx);
     })
     .onEnd(() => {
@@ -73,7 +78,7 @@ const Planet = () => {
         currentAngle <= 0
           ? Math.PI * 2 + currentAngle
           : Math.PI * 2 - currentAngle;
-      const normalizedDuration = (remainingAngle / (Math.PI * 2)) * 10000;
+      const normalizedDuration = (remainingAngle / (Math.PI * 2)) * EARTH_YEAR;
 
       angle.value = withTiming(
         angle.value + remainingAngle,
@@ -84,7 +89,7 @@ const Planet = () => {
         () => {
           angle.value = withRepeat(
             withTiming(angle.value + Math.PI * 2, {
-              duration: 10000,
+              duration: EARTH_YEAR,
               easing: Easing.linear,
             }),
             -1
@@ -94,11 +99,11 @@ const Planet = () => {
     });
 
   const positionX = useDerivedValue(() => {
-    return width / 2 + ORBIT_RADIUS * Math.cos(angle.value);
+    return width / 2 + (ORBIT_RADIUS_X / 2) * Math.cos(angle.value);
   });
 
   const positionY = useDerivedValue(() => {
-    return height / 2 + ORBIT_RADIUS * Math.sin(angle.value);
+    return height / 2 + (ORBIT_RADIUS_Y / 2) * Math.sin(angle.value);
   });
 
   const moonPositionX = useDerivedValue(() => {
@@ -115,6 +120,45 @@ const Planet = () => {
     };
   });
 
+  const planetColor = useDerivedValue(() => {
+    const normalizedAngle =
+      angle.value < 0 ? angle.value + 2 * Math.PI : angle.value;
+
+    return interpolateColor(
+      normalizedAngle,
+      [
+        0, // right
+        Math.PI / 2, // top
+        Math.PI, // left
+        (3 * Math.PI) / 2, // bottom
+        2 * Math.PI, // right
+      ],
+      [
+        colors.error, // right
+        colors.accent1, // top
+        colors.error, // left
+        colors.accent1, // bottom
+        colors.error, // right
+      ]
+    );
+  });
+
+  const earthShadow = useDerivedValue(() => {
+    const normalizedAngle =
+      angle.value < 0 ? angle.value + 2 * Math.PI : angle.value;
+    return interpolate(
+      normalizedAngle,
+      [
+        0, // right
+        Math.PI / 2, // top
+        Math.PI, // left
+        (3 * Math.PI) / 2, // bottom
+        2 * Math.PI, // right
+      ],
+      [5, 0, 5, 0, 5]
+    );
+  });
+
   return (
     <GestureHandlerRootView>
       <Canvas style={{ height, width }}>
@@ -128,35 +172,37 @@ const Planet = () => {
           <Shadow
             dx={0}
             dy={0}
-            blur={30}
+            blur={25}
             color={colors.warning}
             inner={false}
           />
         </Circle>
 
         {/* Orbit */}
-        <Circle
-          cx={width / 2}
-          cy={height / 2}
-          r={ORBIT_RADIUS}
+        <Oval
+          x={width / 2 - ORBIT_RADIUS_X / 2}
+          y={height / 2 - ORBIT_RADIUS_Y / 2}
+          width={ORBIT_RADIUS_X}
+          height={ORBIT_RADIUS_Y}
           color={colors.border}
-          style="stroke"
+          style={"stroke"}
           strokeWidth={1}
         />
-
         {/* Stars */}
-        <Stars />
+        {/* <Stars /> */}
       </Canvas>
       {/* Planet */}
       <GestureDetector gesture={gesture}>
         <Canvas style={{ height, width, position: "absolute" }}>
-          {/* Earth */}
+          {/* Earth with interpolated color */}
           <Circle
             cx={positionX}
             cy={positionY}
             r={PLANET_RADIUS}
-            color={colors.accent1}
-          />
+            color={planetColor}
+          >
+            <Shadow dx={0} dy={0} blur={earthShadow} color={colors.warning} />
+          </Circle>
           {/* Earth's Orbit */}
           <Circle
             cx={positionX}
@@ -167,7 +213,7 @@ const Planet = () => {
             color={colors.border}
           />
 
-          {/*  */}
+          {/* Moon  */}
           <Circle
             cx={moonPositionX}
             cy={moonPositionY}
