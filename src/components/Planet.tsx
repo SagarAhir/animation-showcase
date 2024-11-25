@@ -24,14 +24,13 @@ import { CustomText } from "./StyledText";
 
 const { height, width } = Dimensions.get("window");
 
-const ORBIT_RADIUS_X = 250;
-const ORBIT_RADIUS_Y = 300;
+const ORBIT_X = 125;
+const ORBIT_Y = 150;
 const STAR_RADIUS = 30;
 const PLANET_RADIUS = STAR_RADIUS / 4;
 const MOON_ORBIT = PLANET_RADIUS * 4;
 const MOON_RADIUS = PLANET_RADIUS / 2;
 const EARTH_YEAR = 11000;
-const MOON_YEAR = 3000;
 
 const Planet = () => {
   const { colors } = useTheme();
@@ -39,20 +38,12 @@ const Planet = () => {
 
   const angle = useSharedValue(0);
   const prevAngle = useSharedValue(0);
-  const moonAngle = useSharedValue(0);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
     angle.value = withRepeat(
       withTiming(Math.PI * 2, {
         duration: EARTH_YEAR,
-        easing: Easing.linear,
-      }),
-      -1
-    );
-    moonAngle.value = withRepeat(
-      withTiming(Math.PI * 2, {
-        duration: MOON_YEAR,
         easing: Easing.linear,
       }),
       -1
@@ -68,50 +59,34 @@ const Planet = () => {
       opacity.value = withTiming(0, {
         duration: 2000,
       });
-      const dx = e.absoluteX - width / 2; // x - center x
-      const dy = e.absoluteY - height / 2; // y - center y
+      const dx = e.absoluteX - width / 2;
+      const dy = e.absoluteY - height / 2;
       angle.value = Math.atan2(dy, dx);
     })
     .onEnd(() => {
-      const currentAngle = angle.value % (Math.PI * 2);
-      const remainingAngle =
-        currentAngle <= 0
-          ? Math.PI * 2 + currentAngle
-          : Math.PI * 2 - currentAngle;
-      const normalizedDuration = (remainingAngle / (Math.PI * 2)) * EARTH_YEAR;
-
-      angle.value = withTiming(
-        angle.value + remainingAngle,
-        {
-          duration: normalizedDuration,
+      angle.value = withRepeat(
+        withTiming(angle.value + 2 * Math.PI, {
+          duration: EARTH_YEAR,
           easing: Easing.linear,
-        },
-        () => {
-          angle.value = withRepeat(
-            withTiming(angle.value + Math.PI * 2, {
-              duration: EARTH_YEAR,
-              easing: Easing.linear,
-            }),
-            -1
-          );
-        }
+        }),
+        -1
       );
     });
 
   const positionX = useDerivedValue(() => {
-    return width / 2 + (ORBIT_RADIUS_X / 2) * Math.cos(angle.value);
+    return width / 2 + ORBIT_X * Math.cos(angle.value);
   });
 
   const positionY = useDerivedValue(() => {
-    return height / 2 + (ORBIT_RADIUS_Y / 2) * Math.sin(angle.value);
+    return height / 2 + ORBIT_Y * Math.sin(angle.value);
   });
 
   const moonPositionX = useDerivedValue(() => {
-    return positionX.value + MOON_ORBIT * Math.cos(moonAngle.value);
+    return positionX.value + MOON_ORBIT * Math.cos(4 * angle.value);
   });
 
   const moonPositionY = useDerivedValue(() => {
-    return positionY.value + MOON_ORBIT * Math.sin(moonAngle.value);
+    return positionY.value + MOON_ORBIT * Math.sin(4 * angle.value);
   });
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -121,42 +96,21 @@ const Planet = () => {
   });
 
   const planetColor = useDerivedValue(() => {
-    const normalizedAngle =
-      angle.value < 0 ? angle.value + 2 * Math.PI : angle.value;
-
+    const radius = Math.sqrt(
+      (positionX.value - width / 2) ** 2 + (positionY.value - height / 2) ** 2
+    );
     return interpolateColor(
-      normalizedAngle,
-      [
-        0, // right
-        Math.PI / 2, // top
-        Math.PI, // left
-        (3 * Math.PI) / 2, // bottom
-        2 * Math.PI, // right
-      ],
-      [
-        colors.error, // right
-        colors.accent1, // top
-        colors.error, // left
-        colors.accent1, // bottom
-        colors.error, // right
-      ]
+      radius,
+      [ORBIT_X, ORBIT_Y],
+      [colors.error, colors.accent1]
     );
   });
 
   const earthShadow = useDerivedValue(() => {
-    const normalizedAngle =
-      angle.value < 0 ? angle.value + 2 * Math.PI : angle.value;
-    return interpolate(
-      normalizedAngle,
-      [
-        0, // right
-        Math.PI / 2, // top
-        Math.PI, // left
-        (3 * Math.PI) / 2, // bottom
-        2 * Math.PI, // right
-      ],
-      [5, 0, 5, 0, 5]
+    const radius = Math.sqrt(
+      (positionX.value - width / 2) ** 2 + (positionY.value - height / 2) ** 2
     );
+    return interpolate(radius, [ORBIT_X, ORBIT_Y], [5, 0]);
   });
 
   return (
@@ -180,10 +134,10 @@ const Planet = () => {
 
         {/* Orbit */}
         <Oval
-          x={width / 2 - ORBIT_RADIUS_X / 2}
-          y={height / 2 - ORBIT_RADIUS_Y / 2}
-          width={ORBIT_RADIUS_X}
-          height={ORBIT_RADIUS_Y}
+          x={width / 2 - ORBIT_X}
+          y={height / 2 - ORBIT_Y}
+          width={ORBIT_X * 2}
+          height={ORBIT_Y * 2}
           color={colors.border}
           style={"stroke"}
           strokeWidth={1}
