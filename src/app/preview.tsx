@@ -1,4 +1,4 @@
-import { StyleSheet, useColorScheme, View } from "react-native";
+import { Platform, StyleSheet, useColorScheme, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ANIMATION_ID } from "@/constants/Constants";
@@ -10,6 +10,10 @@ import Colors from "@/constants/Colors";
 import Planet from "@/components/Planet";
 import GravityCenter from "@/components/GravityCenter";
 import { CustomText } from "@/components/StyledText";
+import Charging from "@/components/Charging";
+import { WithSkiaWeb } from "@shopify/react-native-skia/lib/module/web";
+import { Text } from "@/components/Themed";
+
 const { width } = Dimensions.get("window");
 
 const CURSOR_SIZE = 40;
@@ -37,6 +41,18 @@ const Preview = () => {
         return <Planet />;
       case ANIMATION_ID.GRAVITY:
         return <GravityCenter />;
+      case ANIMATION_ID.CHARGING: {
+        if (Platform.OS === "web") {
+          return (
+            <WithSkiaWeb
+              getComponent={() => import("@/components/Charging")}
+              fallback={<Text>Loading Skia...</Text>}
+            />
+          );
+        } else {
+          return <Charging />;
+        }
+      }
       default:
         return <CustomText>Animation not found</CustomText>;
     }
