@@ -43,6 +43,7 @@ const Preview = () => {
         return <GravityCenter />;
       case ANIMATION_ID.CHARGING: {
         if (Platform.OS === "web") {
+          console.log("gone here.........");
           return (
             <WithSkiaWeb
               getComponent={() => import("@/components/Charging")}
