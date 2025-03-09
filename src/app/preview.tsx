@@ -18,7 +18,7 @@ const { width } = Dimensions.get("window");
 
 const CURSOR_SIZE = 40;
 
-const Preview = () => {
+const PreviewBase = () => {
   const { animationId } = useLocalSearchParams<{ animationId: string }>();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -41,19 +41,8 @@ const Preview = () => {
         return <Planet />;
       case ANIMATION_ID.GRAVITY:
         return <GravityCenter />;
-      case ANIMATION_ID.CHARGING: {
-        if (Platform.OS === "web") {
-          console.log("gone here.........");
-          return (
-            <WithSkiaWeb
-              getComponent={() => import("@/components/Charging")}
-              fallback={<Text>Loading Skia...</Text>}
-            />
-          );
-        } else {
-          return <Charging />;
-        }
-      }
+      case ANIMATION_ID.CHARGING:
+        return <Charging diameter={350} />;
       default:
         return <CustomText>Animation not found</CustomText>;
     }
@@ -73,14 +62,25 @@ const Preview = () => {
   );
 };
 
-export default Preview;
+// Web-specific wrapper using a factory function
+const PreviewWeb = () => {
+  console.log("Rendering PreviewWeb with Skia...");
+  return (
+    <WithSkiaWeb
+      getComponent={() => Promise.resolve({ default: PreviewBase })}
+      fallback={<Text>Loading Skia...</Text>}
+    />
+  );
+};
+
+// Export based on platform
+export default Platform.OS === "web" ? PreviewWeb : PreviewBase;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "red",
   },
   darkContainer: {
     backgroundColor: Colors.dark.background,

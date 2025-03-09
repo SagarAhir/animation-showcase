@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "build-preview": "eas build --platform android --profile preview",
-    "postinstall": "node postinstall.js; npx setup-skia-web"
+    "postinstall": "node postinstall.js && npx setup-skia-web",
+    "eas-update": "eas update --branch preview"
   },
   "jest": {
     "preset": "jest-expo"
